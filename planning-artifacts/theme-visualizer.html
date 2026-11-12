@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knowledge Engine - Theme Visualizer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600&family=Inter:wght@400;500&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Theme: Dark Mastery (Cognitive Slate) */
+            --bg-app: #0F1115;
+            --bg-card: #1A1D23;
+            --text-primary: #E2E8F0;
+            --text-secondary: #94A3B8;
+            --accent: #6366F1; /* Indigo Tech */
+            --success: #10B981; /* Emeraude */
+            --error: #EF4444; /* Corail */
+            --info: #3B82F6; /* Azure */
+            --spacing-unit: 8px;
+        }
+
+        body {
+            background-color: var(--bg-app);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Simulator Frame */
+        .mobile-simulator {
+            width: 375px;
+            height: 812px;
+            background: #000;
+            border: 8px solid #333;
+            border-radius: 40px;
+            position: relative;
+            box-shadow: 0 50px 100px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .screen {
+            flex: 1;
+            background-color: var(--bg-app);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            position: relative;
+        }
+
+        header {
+            font-family: 'Outfit', sans-serif;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .status-bar {
+            height: 20px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        /* Quiz Item Card */
+        .quiz-card {
+            background-color: var(--bg-card);
+            padding: 30px 20px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .question-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 24px;
+            font-weight: 600;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        /* Answer Options */
+        .options-grid {
+            display: grid;
+            gap: 12px;
+        }
+
+        .option {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 16px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .option.correct {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .option.incorrect {
+            border-color: var(--error);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .explanation {
+            font-size: 13px;
+            color: var(--info);
+            margin-top: 8px;
+            display: none;
+            line-height: 1.4;
+        }
+
+        .option.incorrect .explanation {
+            display: block;
+        }
+
+        /* Bottom Controls (Fiche Technique Area) */
+        .bottom-shelf {
+            margin-top: auto;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .source-view-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .next-btn {
+            background: var(--accent);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        /* Source View Modal (DHTML Emulation) */
+        .source-modal {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60%;
+            background: #111;
+            border-top: 2px solid var(--accent);
+            padding: 20px;
+            z-index: 10;
+            border-radius: 24px 24px 0 0;
+            display: none;
+            overflow-y: auto;
+        }
+
+        .source-modal.visible {
+            display: block;
+        }
+
+        .source-content {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #88C0D0; /* Nord Polar Night palette */
+        }
+
+        .dhtml-view {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-primary);
+        }
+
+        .dhtml-view h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            color: var(--accent);
+        }
+
+        /* Legend */
+        .controls-info {
+            position: absolute;
+            left: calc(100% + 40px);
+            width: 300px;
+            top: 20px;
+        }
+
+        h3 { color: var(--accent); border-bottom: 1px solid #333; padding-bottom: 8px; }
+        .token { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; font-size: 14px; }
+        .color-box { width: 24px; height: 24px; border-radius: 4px; border: 1px solid #444; }
+
+    </style>
+</head>
+<body>
+
+    <div class="mobile-simulator">
+        <div class="screen" id="screen">
+            <div class="status-bar">
+                <span>9:41</span>
+                <span>📶 🔋</span>
+            </div>
+
+            <header>
+                <div style="font-size: 18px; font-weight: 600;">Quiz Classique</div>
+                <div style="color: var(--accent); font-weight: 600;">5/20</div>
+            </header>
+
+            <div class="quiz-card">
+                <div class="question-label">Item SRS</div>
+                <div class="question-text">Structure du génome</div>
+            </div>
+
+            <div class="options-grid">
+                <div class="option" onclick="select(this)">
+                    <span>Double hélice d'ADN</span>
+                </div>
+                <div class="option" onclick="select(this)">
+                    <span>Simple brin d'ARN</span>
+                </div>
+                <div class="option incorrect" onclick="select(this)">
+                    <span>Structure tertiaire protéique</span>
+                    <div class="explanation">Attention : Ne confondez pas gène et produit du gène. Cette option décrit une protéine.</div>
+                </div>
+                <div class="option correct" onclick="select(this)">
+                    <span>Nucleosome / Chromatine</span>
+                </div>
+            </div>
+
+            <div class="bottom-shelf">
+                <button class="source-view-btn" onclick="toggleSource()">
+                    📖 Fiche Source
+                </button>
+                <button class="next-btn">
+                    Suivant
+                </button>
+            </div>
+
+            <!-- Fiche Modal -->
+            <div class="source-modal" id="sourceModal">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                    <span style="font-weight: 600;">Fiche Technique (DHTML)</span>
+                    <span onclick="toggleSource()" style="cursor: pointer;">✖</span>
+                </div>
+                <div class="dhtml-view">
+                    <h2>Résumé de la Source</h2>
+                    <p>Le matériel génétique est organisé en plusieurs niveaux de compaction...</p>
+                    <ul style="font-size: 14px; color: var(--text-secondary);">
+                        <li>Niveau 1: Nucleosome</li>
+                        <li>Niveau 2: Fibre de 30nm</li>
+                        <li>Niveau 3: Boucle de chromatine</li>
+                    </ul>
+                    <div style="background: #000; padding: 10px; border-radius: 8px; font-family: monospace; font-size: 11px; margin-top: 15px;">
+                        { "source": "Genbank", "id": "X45-9" }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls-info">
+        <h3>Design Tokens</h3>
+        <div class="token"><div class="color-box" style="background: #0F1115;"></div> Background App</div>
+        <div class="token"><div class="color-box" style="background: #1A1D23;"></div> Card Background</div>
+        <div class="token"><div class="color-box" style="background: #6366F1;"></div> Accent (Primary)</div>
+        <div class="token"><div class="color-box" style="background: #10B981;"></div> Success (Positive)</div>
+        <div class="token"><div class="color-box" style="background: #EF4444;"></div> Error (Speculation)</div>
+        
+        <br>
+        <h3>Expérience "Expert"</h3>
+        <p style="font-size: 14px; color: #94A3B8;">
+            • <b>Mobile-First</b> : Tous les boutons sont accessibles au pouce.<br>
+            • <b>Spéculation</b> : L'erreur (Rouge) affiche une explication immédiate.<br>
+            • <b>Source View</b> : Bottom-sheet pour consulter la donnée brute ou riche (DHTML).
+        </p>
+    </div>
+
+    <script>
+        function toggleSource() {
+            document.getElementById('sourceModal').classList.toggle('visible');
+        }
+        function select(el) {
+            // Un peu de simulation interactive
+            console.log("Selected:", el.innerText);
+        }
+    </script>
+</body>
+</html>
